@@ -13,6 +13,10 @@ import java.util.Iterator;
  */
 public final class io {
     
+    public static OutputStream byte_output_stream() {
+        return new ByteArrayOutputStream();
+    }
+    
     public static OutputStream open_output_stream(Object object) throws IOException {
         if (object == null) return null;
         if (object instanceof OutputStream stream) return stream;
@@ -46,12 +50,36 @@ public final class io {
         return new ByteArrayInputStream(new byte[0]);
     }
     
+    public static void write(OutputStream stream, Number number) throws IOException {
+        if (number instanceof Long) {
+            final long value = number.longValue();
+            final byte[] buffer = new byte[8];
+            buffer[0] = (byte) (value >>> 56);
+            buffer[1] = (byte) (value >>> 48);
+            buffer[2] = (byte) (value >>> 40);
+            buffer[3] = (byte) (value >>> 32);
+            buffer[4] = (byte) (value >>> 24);
+            buffer[5] = (byte) (value >>> 16);
+            buffer[6] = (byte) (value >>> 8);
+            buffer[7] = (byte) (value);
+            stream.write(buffer);
+        } else if (number instanceof Integer) {
+            final int value = number.intValue();
+            final byte[] buffer = new byte[4];
+            buffer[0] = (byte) (value >>> 24);
+            buffer[1] = (byte) (value >>> 16);
+            buffer[2] = (byte) (value >>> 8);
+            buffer[3] = (byte) (value);
+            stream.write(buffer);
+        } else stream.write(number.byteValue());
+    }
+    
     public static void close(Object object) throws Throwable {
         if (object instanceof InputStreamController controller) controller.close();
         if (object instanceof AutoCloseable closeable) closeable.close();
     }
     
-    public static Byte read_byte(InputStream stream) throws IOException {
+    public static byte read_byte(InputStream stream) throws IOException {
         return (byte) stream.read();
     }
     
@@ -61,7 +89,7 @@ public final class io {
         return "" + (char) ((first << 8) + second);
     }
     
-    public static Integer read_integer(InputStream stream) throws IOException {
+    public static int read_integer(InputStream stream) throws IOException {
         final int a = stream.read(), b = stream.read(), c = stream.read(), d = stream.read();
         if (d < 0) throw new EOFException();
         return (a << 24) + (b << 16) + (c << 8) + d;

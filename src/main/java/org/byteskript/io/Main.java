@@ -20,6 +20,7 @@ public class Main extends ModifiableLibrary {
     public Main() {
         super("io");
         this.registerTypes(BYTE, INPUT, OUTPUT);
+        this.registerConverter(Byte.class, Integer.class, Byte::intValue);
     }
     
     public static void main(String... args) {

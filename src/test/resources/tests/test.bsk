@@ -1,0 +1,11 @@
+dictionary:
+    use io
+
+function test:
+    trigger:
+        set {stream} to open_input_stream("hello there")
+        set {output} to byte_output_stream()
+        loop {byte} in loop_bytes({stream}):
+            run write({output}, {byte})
+        assert {output} + "" is "hello there"
+        return true
